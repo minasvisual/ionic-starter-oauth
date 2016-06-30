@@ -1,6 +1,9 @@
-angular.module('starter.controllers', [])
+angular.module('starter.controllers')
 
-.controller('AppCtrl', function($scope, $ionicModal, $timeout) {
+.controller('AppCtrl', function(
+  $state, $scope, $ionicModal, $ionicPopup,$timeout, $cookies, OAuth, OAuthToken
+) 
+{
 
   // With the new view caching in Ionic, Controllers are only called
   // when they are recreated or on app start, instead of every page change.
@@ -31,13 +34,26 @@ angular.module('starter.controllers', [])
 
   // Perform the login action when the user submits the login form
   $scope.doLogin = function() {
-    console.log('Doing login', $scope.loginData);
+     OAuth.getAccessToken($scope.loginData).then(
+        function(data)
+        {
+          console.log(data);
+          console.log($cookies.getObject('token'));
+          $scope.closeLogin();
+        },
+        function(responseError){
+          $ionicPopup.alert({
+            title:'Login error',
+            template: 'Username or password invalid!'
+          });
+          $scope.loginData.password = '';
+        });
+  };
 
-    // Simulate a login delay. Remove this and replace with your login
-    // code if using a login system
-    $timeout(function() {
-      $scope.closeLogin();
-    }, 1000);
+  $scope.doLogout = function(){
+      OAuthToken.removeToken();
+      $scope.loginData = {};
+      $state.go('app.home');
   };
 })
 
@@ -53,4 +69,22 @@ angular.module('starter.controllers', [])
 })
 
 .controller('PlaylistCtrl', function($scope, $stateParams) {
+})
+
+.controller('HomeCtrl', function($scope, $stateParams, UserServ, OAuth) {
+    $scope.user = {
+      name:'',
+      last_name:'',
+      email:'',
+      level:''
+    };
+    if( OAuth.isAuthenticated() ){
+      UserServ.query({},
+        function(data){
+          $scope.user = data;
+        });
+    }else{
+       $scope.user.name = 'Visitor';
+    }
+    
 });
