@@ -87,4 +87,34 @@ angular.module('starter.controllers')
        $scope.user.name = 'Visitor';
     }
     
+})
+
+.controller('LoginCtrl', function($scope, $state, $ionicPopup, UserServ, OAuth, OAuthToken) 
+{
+    // Form data for the login modal
+    $scope.loginData = {};
+
+    // Perform the login action when the user submits the login form
+    $scope.doLogin = function() {
+       OAuth.getAccessToken($scope.loginData).then(
+          function(data)
+          {
+            console.log(data);
+            $state.go('app.home');
+          },
+          function(responseError){
+            $ionicPopup.alert({
+              title:'Login error',
+              template: 'Username or password invalid!'
+            });
+            $scope.loginData.password = '';
+          });
+    };
+
+    $scope.doLogout = function(){
+        OAuthToken.removeToken();
+        $scope.loginData = {};
+        $state.go('login');
+    };
+    
 });

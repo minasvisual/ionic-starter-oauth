@@ -6,30 +6,17 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('starter.controllers', [])
 angular.module('starter.services', [])
+angular.module('starter.run', [])
 
 angular.module('starter', [
   'ionic', 
   'starter.controllers',
   'starter.services',
+  'starter.run',
   'angular-oauth2',
   'ngResource'
 ])
 
-.run(function($ionicPlatform) {
-  $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-    if (window.cordova && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
-
-    }
-    if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
-    }
-  });
-})
 .constant('AppConfig',{
     baseUrl: 'http://localhost:8000/',
     userRoute: 'api/user/',
@@ -55,6 +42,12 @@ angular.module('starter', [
 
   $stateProvider
 
+    .state('login', {
+      url: '/login',
+      templateUrl: 'templates/login.html',
+      controller: 'LoginCtrl'
+    })
+
     .state('app', {
       url: '/app',
       abstract: true,
@@ -64,6 +57,7 @@ angular.module('starter', [
 
     .state('app.home', {
       url: '/home',
+      authRequired: true,
       views: {
         'menuContent': {
           templateUrl: 'templates/home.html',
@@ -74,6 +68,7 @@ angular.module('starter', [
 
     .state('app.search', {
       url: '/search',
+      authRequired: true,
       views: {
         'menuContent': {
           templateUrl: 'templates/search.html'
@@ -83,6 +78,7 @@ angular.module('starter', [
 
     .state('app.browse', {
         url: '/browse',
+        authRequired: true,
         views: {
           'menuContent': {
             templateUrl: 'templates/browse.html'
@@ -92,6 +88,7 @@ angular.module('starter', [
 
       .state('app.playlists', {
         url: '/playlists',
+        authRequired: true,
         views: {
           'menuContent': {
             templateUrl: 'templates/playlists.html',
@@ -102,6 +99,7 @@ angular.module('starter', [
 
     .state('app.single', {
       url: '/playlists/:playlistId',
+      authRequired: true,
       views: {
         'menuContent': {
           templateUrl: 'templates/playlist.html',
@@ -110,5 +108,5 @@ angular.module('starter', [
       }
     });
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('app/home');
+  $urlRouterProvider.otherwise('login');
 });
