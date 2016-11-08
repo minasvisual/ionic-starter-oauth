@@ -14,17 +14,21 @@ angular.module('starter', [
   'starter.services',
   'starter.run',
   'angular-oauth2',
-  'ngResource'
+  'ngResource',
+  'http-auth-interceptor'
 ])
 
 .constant('AppConfig',{
     baseUrl: 'http://localhost:8000/',
     userRoute: 'api/user/',
-    clientId: 'appid01',
+    clientId: 'api01',
     clientSecret: 'secret', // optional
     grantPath: '/oauth/access_token'
 })
-.config(function($stateProvider, $urlRouterProvider, OAuthProvider, OAuthTokenProvider, AppConfig) 
+
+.config(function(
+  $stateProvider, $urlRouterProvider, OAuthProvider, OAuthTokenProvider, AppConfig, $provide
+) 
 {
     OAuthProvider.configure({
       baseUrl: AppConfig.baseUrl,
@@ -46,6 +50,11 @@ angular.module('starter', [
       url: '/login',
       templateUrl: 'templates/login.html',
       controller: 'LoginCtrl'
+    })
+
+   .state('logout', {
+      url: '/logout',
+      controller: 'LogoutCtrl'
     })
 
     .state('app', {
@@ -109,4 +118,9 @@ angular.module('starter', [
     });
   // if none of the above states are matched, use this as the fallback
   $urlRouterProvider.otherwise('login');
+
+  $provide.decorator('oauthInterceptor', ['$delegate', function($delegate){
+      delete $delegate['responseError'];
+      return $delegate;
+  }]);
 });

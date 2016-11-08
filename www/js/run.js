@@ -1,6 +1,7 @@
 angular.module('starter.run')
 
-	.run(function($ionicPlatform, $state, $rootScope, OAuth) 
+	.run(['$ionicPlatform', '$state', '$rootScope', 'OAuth', 'authService',
+				function($ionicPlatform, $state, $rootScope, OAuth, authService) 
 	{
 	  $ionicPlatform.ready(function() 
 	  {
@@ -28,4 +29,16 @@ angular.module('starter.run')
 	      }
 	  });
 
-	});
+	  $rootScope.$on('event:auth-loginRequired', function(event, toState, toParams, fromState, fromParams){
+	  		console.log('catch auth required');
+	  		OAuth.getRefreshToken().then(
+	  			function(data){
+	  				authService.loginConfirmed();
+	  			},
+	  			function(responseError){
+	  				$state.go('logout');
+	  			}
+	  		);
+	  });
+
+}]);

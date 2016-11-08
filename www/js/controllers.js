@@ -50,11 +50,6 @@ angular.module('starter.controllers')
         });
   };
 
-  $scope.doLogout = function(){
-      OAuthToken.removeToken();
-      $scope.loginData = {};
-      $state.go('app.home');
-  };
 })
 
 .controller('PlaylistsCtrl', function($scope) {
@@ -91,7 +86,6 @@ angular.module('starter.controllers')
 
 .controller('LoginCtrl', function($scope, $state, $ionicPopup, UserServ, OAuth, OAuthToken) 
 {
-    // Form data for the login modal
     $scope.loginData = {};
 
     // Perform the login action when the user submits the login form
@@ -111,10 +105,18 @@ angular.module('starter.controllers')
           });
     };
 
-    $scope.doLogout = function(){
-        OAuthToken.removeToken();
-        $scope.loginData = {};
-        $state.go('login');
-    };
-    
+})
+
+.controller('LogoutCtrl', function($scope, $state, $ionicPopup, UserServ, OAuth, OAuthToken, $ionicHistory) 
+{
+    // Form data for the login modal
+    OAuthToken.removeToken();
+    $scope.loginData = null;
+    $ionicHistory.clearCache();
+    $ionicHistory.clearHistory();
+    $ionicHistory.nextViewOptions({
+        disableBack: true,
+        historyRoot: true
+    });
+    $state.go('login');
 });
